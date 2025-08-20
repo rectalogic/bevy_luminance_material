@@ -18,7 +18,7 @@ pub struct LuminancePlugin;
 impl Plugin for LuminancePlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(Material2dPlugin::<LuminanceMaterial>::default())
-            .init_resource::<FullscreenTriangle>()
+            .init_resource::<DummyTriangle>()
             .add_systems(Startup, setup)
             .add_systems(PostUpdate, handle_new_sources);
     }
@@ -48,9 +48,9 @@ impl LuminanceTextureTarget {
 }
 
 #[derive(Resource, Default)]
-struct FullscreenTriangle(Handle<Mesh>);
+struct DummyTriangle(Handle<Mesh>);
 
-fn setup(mut meshes: ResMut<Assets<Mesh>>, mut triangle: ResMut<FullscreenTriangle>) {
+fn setup(mut meshes: ResMut<Assets<Mesh>>, mut triangle: ResMut<DummyTriangle>) {
     // Dummy triangle for shader
     let positions = vec![[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]];
     let mesh = Mesh::new(
@@ -64,7 +64,7 @@ fn setup(mut meshes: ResMut<Assets<Mesh>>, mut triangle: ResMut<FullscreenTriang
 fn handle_new_sources(
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
-    triangle: Res<FullscreenTriangle>,
+    triangle: Res<DummyTriangle>,
     mut materials: ResMut<Assets<LuminanceMaterial>>,
     sources: Query<(Entity, &LuminanceTextureSource), Added<LuminanceTextureSource>>,
 ) {
