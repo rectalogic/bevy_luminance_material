@@ -52,12 +52,12 @@ struct DummyTriangle(Handle<Mesh>);
 
 fn setup(mut meshes: ResMut<Assets<Mesh>>, mut triangle: ResMut<DummyTriangle>) {
     // Dummy triangle for shader
-    let positions = vec![[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]];
     let mesh = Mesh::new(
         PrimitiveTopology::TriangleList,
         RenderAssetUsages::RENDER_WORLD,
     )
-    .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, positions);
+    .with_inserted_indices(bevy::render::mesh::Indices::U32(vec![0, 1, 2]))
+    .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, vec![[0.0, 0.0, 0.0]; 3]);
     triangle.0 = meshes.add(mesh);
 }
 
