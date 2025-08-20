@@ -18,6 +18,12 @@ fn setup(
     let texture = asset_server.load("textures/bevy_logo.png");
     let scale = Vec3::new(4.0, 1.0, 1.0); // based on image aspect ratio
 
+    let depth_material = materials.add(StandardMaterial {
+        base_color: RED.into(),
+        base_color_texture: Some(texture.clone()),
+        parallax_depth_scale: 0.09,
+        ..default()
+    });
     commands.spawn((
         Mesh3d(
             meshes.add(
@@ -27,23 +33,18 @@ fn setup(
             ),
         ),
         Transform::from_scale(scale),
-        MeshMaterial3d(materials.add(StandardMaterial {
-            base_color: RED.into(),
-            base_color_texture: Some(texture.clone()),
-            parallax_depth_scale: 0.09,
-            ..default()
-        })),
+        MeshMaterial3d(depth_material.clone()),
     ));
 
     commands
         .spawn(LuminanceTextureSource::new(texture))
         .observe(
-            |trigger: Trigger<OnAdd, LuminanceTextureTarget>,
-             targets: Query<(&LuminanceTextureTarget, &MeshMaterial3d<StandardMaterial>)>,
-             mut materials: ResMut<Assets<StandardMaterial>>| {
+            move |trigger: Trigger<OnAdd, LuminanceTextureTarget>,
+                  targets: Query<&LuminanceTextureTarget>,
+                  mut materials: ResMut<Assets<StandardMaterial>>| {
                 let entity = trigger.target();
-                if let Ok((target, mesh_material)) = targets.get(entity)
-                    && let Some(material) = materials.get_mut(&mesh_material.0)
+                if let Ok(target) = targets.get(entity)
+                    && let Some(material) = materials.get_mut(&depth_material)
                 {
                     material.depth_map = Some(target.texture().clone());
                 }
