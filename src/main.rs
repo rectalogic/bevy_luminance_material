@@ -1,9 +1,5 @@
-use bevy::{
-    color::palettes::basic::RED, pbr::MaterialExtension, prelude::*, render::render_resource::*,
-};
-
-/// This example uses a shader source file from the assets subdirectory
-const SHADER_ASSET_PATH: &str = "shaders/vertexture.wgsl";
+use bevy::{color::palettes::basic::RED, prelude::*};
+use displacement::luminance::{LuminanceTextureSource, LuminanceTextureTarget};
 
 fn main() {
     App::new()
@@ -22,23 +18,36 @@ fn setup(
     let texture = asset_server.load("textures/bevy_logo.png");
     let scale = Vec3::new(4.0, 1.0, 1.0); // based on image aspect ratio
 
-    commands.spawn((
-        Mesh3d(
-            meshes.add(
-                Mesh::from(Plane3d::default().mesh())
-                    .with_generated_tangents()
-                    .unwrap(),
+    commands
+        .spawn((
+            Mesh3d(
+                meshes.add(
+                    Mesh::from(Plane3d::default().mesh())
+                        .with_generated_tangents()
+                        .unwrap(),
+                ),
             ),
-        ),
-        Transform::from_scale(scale),
-        MeshMaterial3d(materials.add(StandardMaterial {
-            base_color: RED.into(),
-            base_color_texture: Some(texture.clone()),
-            depth_map: Some(texture),
-            parallax_depth_scale: 0.09,
-            ..default()
-        })),
-    ));
+            Transform::from_scale(scale),
+            LuminanceTextureSource::new(texture.clone(), 99),
+            MeshMaterial3d(materials.add(StandardMaterial {
+                base_color: RED.into(),
+                base_color_texture: Some(texture),
+                parallax_depth_scale: 0.09,
+                ..default()
+            })),
+        ))
+        .observe(
+            |trigger: Trigger<OnAdd, LuminanceTextureTarget>,
+             targets: Query<(&LuminanceTextureTarget, &MeshMaterial3d<StandardMaterial>)>,
+             mut materials: ResMut<Assets<StandardMaterial>>| {
+                let entity = trigger.target();
+                if let Ok((target, mesh_material)) = targets.get(entity)
+                    && let Some(material) = materials.get_mut(&mesh_material.0)
+                {
+                    material.depth_map = Some(target.texture().clone());
+                }
+            },
+        );
 
     // light
     commands.spawn((
@@ -63,17 +72,5 @@ struct Rotate;
 fn rotate_things(mut q: Query<&mut Transform, With<Rotate>>, time: Res<Time>) {
     for mut t in &mut q {
         t.rotate_y(time.delta_secs());
-    }
-}
-
-#[derive(Asset, AsBindGroup, Reflect, Debug, Default, Clone)]
-struct VertextureExtension {
-    #[uniform(100)]
-    _dummy: f32,
-}
-
-impl MaterialExtension for VertextureExtension {
-    fn vertex_shader() -> ShaderRef {
-        SHADER_ASSET_PATH.into()
     }
 }
