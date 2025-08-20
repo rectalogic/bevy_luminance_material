@@ -1,9 +1,9 @@
 use bevy::{color::palettes::basic::RED, prelude::*};
-use displacement::luminance::{LuminanceTextureSource, LuminanceTextureTarget};
+use displacement::luminance::{LuminancePlugin, LuminanceTextureSource, LuminanceTextureTarget};
 
 fn main() {
     App::new()
-        .add_plugins((DefaultPlugins,))
+        .add_plugins((DefaultPlugins, LuminancePlugin))
         .add_systems(Startup, setup)
         .add_systems(Update, rotate_things)
         .run();
@@ -18,24 +18,25 @@ fn setup(
     let texture = asset_server.load("textures/bevy_logo.png");
     let scale = Vec3::new(4.0, 1.0, 1.0); // based on image aspect ratio
 
-    commands
-        .spawn((
-            Mesh3d(
-                meshes.add(
-                    Mesh::from(Plane3d::default().mesh())
-                        .with_generated_tangents()
-                        .unwrap(),
-                ),
+    commands.spawn((
+        Mesh3d(
+            meshes.add(
+                Mesh::from(Plane3d::default().mesh())
+                    .with_generated_tangents()
+                    .unwrap(),
             ),
-            Transform::from_scale(scale),
-            LuminanceTextureSource::new(texture.clone(), 99),
-            MeshMaterial3d(materials.add(StandardMaterial {
-                base_color: RED.into(),
-                base_color_texture: Some(texture),
-                parallax_depth_scale: 0.09,
-                ..default()
-            })),
-        ))
+        ),
+        Transform::from_scale(scale),
+        MeshMaterial3d(materials.add(StandardMaterial {
+            base_color: RED.into(),
+            base_color_texture: Some(texture.clone()),
+            parallax_depth_scale: 0.09,
+            ..default()
+        })),
+    ));
+
+    commands
+        .spawn(LuminanceTextureSource::new(texture))
         .observe(
             |trigger: Trigger<OnAdd, LuminanceTextureTarget>,
              targets: Query<(&LuminanceTextureTarget, &MeshMaterial3d<StandardMaterial>)>,

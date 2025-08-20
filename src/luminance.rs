@@ -1,9 +1,7 @@
 use bevy::{
     asset::RenderAssetUsages,
-    math::FloatOrd,
     prelude::*,
     render::{
-        camera::{ImageRenderTarget, RenderTarget},
         render_resource::{
             AsBindGroup, Extent3d, ShaderRef, TextureDimension, TextureFormat, TextureUsages,
         },
@@ -25,20 +23,17 @@ impl Plugin for LuminancePlugin {
 
 #[derive(Component, Default, Debug, Clone)]
 pub struct LuminanceTextureSource {
-    pub texture: Handle<Image>,
-    pub render_layer: usize,
+    texture: Handle<Image>,
 }
 
 impl LuminanceTextureSource {
-    pub fn new(texture: Handle<Image>, render_layer: usize) -> Self {
-        Self {
-            texture,
-            render_layer,
-        }
+    pub fn new(texture: Handle<Image>) -> Self {
+        Self { texture }
     }
 }
 
 #[derive(Component, Default, Debug, Clone)]
+#[require(RenderLayers::layer(3))]
 pub struct LuminanceTextureTarget {
     texture: Handle<Image>,
 }
@@ -74,14 +69,11 @@ fn handle_new_sources(
         let target_image = images.add(image);
 
         commands.entity(entity).insert((
+            Camera2d,
             Camera {
-                target: RenderTarget::Image(ImageRenderTarget {
-                    handle: target_image.clone(),
-                    scale_factor: FloatOrd(1.0),
-                }),
+                target: target_image.clone().into(),
                 ..default()
             },
-            RenderLayers::layer(source.render_layer),
             MeshMaterial2d(materials.add(LuminanceMaterial {
                 texture: source.texture.clone(),
             })),
