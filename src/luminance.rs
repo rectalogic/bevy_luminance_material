@@ -69,7 +69,6 @@ fn handle_new_sources(
     sources: Query<(Entity, &LuminanceTextureSource), Added<LuminanceTextureSource>>,
 ) {
     for (entity, source) in &sources {
-        // XXX update to Image::new_target_texture
         let mut image = Image::new_uninit(
             Extent3d {
                 //XXX make configurable? or match source texture size once known?
