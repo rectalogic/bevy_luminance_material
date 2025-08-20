@@ -51,16 +51,13 @@ impl LuminanceTextureTarget {
 struct FullscreenTriangle(Handle<Mesh>);
 
 fn setup(mut meshes: ResMut<Assets<Mesh>>, mut triangle: ResMut<FullscreenTriangle>) {
-    // Fullscreen triangle
-    let positions = vec![[-1.0, -3.0, 0.0], [3.0, 1.0, 0.0], [-1.0, 1.0, 0.0]];
-    let uvs = vec![[0.0, 0.0], [2.0, 1.0], [0.0, 1.0]];
+    // Dummy triangle for shader
+    let positions = vec![[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]];
     let mesh = Mesh::new(
         PrimitiveTopology::TriangleList,
         RenderAssetUsages::RENDER_WORLD,
     )
-    .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, positions)
-    .with_inserted_attribute(Mesh::ATTRIBUTE_UV_0, uvs)
-    .with_inserted_indices(bevy::render::mesh::Indices::U32(vec![0, 1, 2]));
+    .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, positions);
     triangle.0 = meshes.add(mesh);
 }
 
@@ -114,6 +111,9 @@ struct LuminanceMaterial {
 }
 
 impl Material2d for LuminanceMaterial {
+    fn vertex_shader() -> ShaderRef {
+        SHADER_ASSET_PATH.into()
+    }
     fn fragment_shader() -> ShaderRef {
         SHADER_ASSET_PATH.into()
     }

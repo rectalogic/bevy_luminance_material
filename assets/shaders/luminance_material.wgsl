@@ -6,6 +6,17 @@ struct VertexOutput {
     @location(0) uv: vec2<f32>,
 };
 
+@vertex
+fn vertex(@builtin(vertex_index) idx: u32) -> VertexOutput {
+    var pos = array<vec2<f32>, 3>(
+        vec2<f32>(-1.0, -3.0),
+        vec2<f32>( 3.0,  1.0),
+        vec2<f32>(-1.0,  1.0),
+    );
+    var uv = (pos[idx] + vec2<f32>(1.0)) * 0.5;
+    return VertexOutput(vec4<f32>(pos[idx], 0.0, 1.0), uv);
+}
+
 @fragment
 fn fragment(in: VertexOutput) -> @location(0) vec4<f32> {
     let color = textureSample(color_texture, color_sampler, in.uv);
