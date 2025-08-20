@@ -14,12 +14,13 @@ fn vertex(@builtin(vertex_index) idx: u32) -> VertexOutput {
         vec2<f32>(-1.0,  1.0),
     );
     var uv = (pos[idx] + vec2<f32>(1.0)) * 0.5;
+    uv.y = 1.0 - uv.y;
     return VertexOutput(vec4<f32>(pos[idx], 0.0, 1.0), uv);
 }
 
 @fragment
 fn fragment(in: VertexOutput) -> @location(0) vec4<f32> {
     let color = textureSample(color_texture, color_sampler, in.uv);
-    let luminance = dot(color.rgb, vec3<f32>(0.299, 0.587, 0.114));
+    let luminance = 1.0 - dot(color.rgb, vec3<f32>(0.299, 0.587, 0.114));
     return vec4<f32>(luminance, luminance, luminance, 1.0);
 }

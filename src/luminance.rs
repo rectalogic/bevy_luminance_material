@@ -78,7 +78,7 @@ fn handle_new_sources(
             },
             TextureDimension::D2,
             TextureFormat::Bgra8UnormSrgb,
-            RenderAssetUsages::RENDER_WORLD,
+            RenderAssetUsages::default(),
         );
         image.texture_descriptor.usage = TextureUsages::TEXTURE_BINDING
             | TextureUsages::COPY_DST
