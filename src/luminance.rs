@@ -103,7 +103,7 @@ fn handle_new_sources(
 }
 
 #[derive(Asset, TypePath, AsBindGroup, Default, Debug, Clone)]
-struct LuminanceMaterial {
+pub struct LuminanceMaterial {
     #[texture(1)]
     #[sampler(2)]
     texture: Handle<Image>,
