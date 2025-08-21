@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_av1::{
     PlaybackMode, VideoPlayer, VideoPlugin, VideoSink, VideoTargetApp, VideoTargetAssets,
 };
-use displacement::luminance::{
+use bevy_luminance_material::{
     LuminanceMaterial, LuminancePlugin, LuminanceTextureSource, LuminanceTextureTarget,
 };
 

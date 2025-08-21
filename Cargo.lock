@@ -805,6 +805,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_luminance_material"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "bevy_av1",
+]
+
+[[package]]
 name = "bevy_macro_utils"
 version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1900,14 +1908,6 @@ name = "dispatch"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bd0c93bb4b0c6d9b77f4435b0ae98c24d17f1c45b2ff844c6151a07256ca923b"
-
-[[package]]
-name = "displacement"
-version = "0.1.0"
-dependencies = [
- "bevy",
- "bevy_av1",
-]
 
 [[package]]
 name = "disqualified"
